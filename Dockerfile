@@ -13,18 +13,16 @@ COPY start-devpi.sh ./start-devpi.sh
 RUN chmod +x start-devpi.sh
 RUN ./start-devpi.sh
 
-RUN chmod 777 -Rv /devpi/+files
+RUN chmod 777 -Rv /devpi
 
 FROM python:3.9-alpine
 
 RUN pip install --quiet --upgrade devpi-server && \
-         devpi-server --version && \
-         mkdir -p /devpi && \
-         devpi-init --serverdir /devpi && \
-         chmod 777 -Rv /devpi
+         devpi-server --version
 
 # copy installed packages from builder
-COPY --from=devpi /devpi/+files /devpi/+files
+COPY --from=devpi /devpi /devpi
+RUN chmod 777 -v /devpi
 
 USER 65532:65532
 
