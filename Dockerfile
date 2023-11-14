@@ -1,4 +1,4 @@
-FROM python:3.10-alpine
+FROM python:3.9 as devpi
 
 RUN pip install --quiet --upgrade devpi-server
 
@@ -8,7 +8,23 @@ RUN mkdir -p /devpi
 
 RUN devpi-init --serverdir /devpi
 
-RUN chmod 777 -Rv /devpi
+COPY requirements.txt ./requirements.txt
+COPY start-devpi.sh ./start-devpi.sh
+RUN chmod +x start-devpi.sh
+RUN ./start-devpi.sh
+
+RUN chmod 777 -Rv /devpi/+files
+
+FROM python:3.9-alpine
+
+RUN pip install --quiet --upgrade devpi-server && \
+         devpi-server --version && \
+         mkdir -p /devpi && \
+         devpi-init --serverdir /devpi && \
+         chmod 777 -Rv /devpi
+
+# copy installed packages from builder
+COPY --from=devpi /devpi/+files /devpi/+files
 
 USER 65532:65532
 
