@@ -14,8 +14,12 @@ After clonning repository, change current directory to devpi folder  :
 cd devpi
 ```
 Build an image using Dockerfile present in current working directory
-```ini
+```bash
 podman build -t <image_name> .
+```
+Alternatively you can specify version of Python packages to be pulled by providing build parameter `PYTHON_PACKAGE_VERSION`.
+```bash
+podman build -t <image_name> --build-arg PYTHON_PACKAGE_VERSION=3.8 .
 ```
 
 Run container instance using image created above by port forwarding container port `3141` to container host's port `3141` 
